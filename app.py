@@ -10,9 +10,25 @@ import time
 import sys
 
 class main_window(QtWidgets.QMainWindow):
-	signal_dash = pyqtSignal()
+	signal_dash = pyqtSignal(str,str)
 	def __init__(self):
 		super(main_window,self).__init__()
+
+		syle1='''
+		QPushButton{
+		background-color: rgb(88, 178, 23);
+		font: 15pt "Open Sans";
+		border-radius:1px;color: rgb(255, 255, 255);
+		}
+		QPushButton:hover{
+		background-color: rgb(0, 255, 0);
+		font: 15pt "Open Sans";
+		border-radius:1px;color: rgb(255, 255, 255);
+		}
+
+
+
+		'''
 		self.firebaseConfig ={
 			"apiKey": "AIzaSyA--z3Dm4GF7GR4hd0OAvEc-IFkHlIe5Zs",
     		"authDomain": "memoir-journal-app.firebaseapp.com",
@@ -26,82 +42,99 @@ class main_window(QtWidgets.QMainWindow):
 		}
 
 		uic.loadUi('a.ui',self)
+		
 		self.pushButton_4.hide()
 		self.pushButton_3.hide()
-		self.anime.hide()
+		self.pushButton.setStyleSheet(syle1)
+		self.pushButton_3.setStyleSheet(syle1)
+		self.pushButton.setShortcut('return')
+		self.pushButton_3.setShortcut('return')
+		#self.anime.hide()
+		
 		self.label_3.setStyleSheet(" background-image: url(bg.webp);")
 		self.lineEdit_2.setEchoMode(QtWidgets.QLineEdit.Password)
-		self.mv = QMovie('load.gif')
-		self.anime.setMovie(self.mv)
+		#elf.mv = QMovie('load.gif')
+		#self.anime.setMovie(self.mv)
 		self.pushButton_2.clicked.connect(self.signup_page)
 		self.pushButton.clicked.connect(self.login_ver)
+		self.password = self.lineEdit_2.text()
+		self.email = self.lineEdit.text()
 		self.show()
 		self.pushButton_3.clicked.connect(self.cloudin)
+	
 	def login_ver(self):
+		self.password = self.lineEdit_2.text()
+		self.email = self.lineEdit.text()
 		firebase = pyrebase.initialize_app(self.firebaseConfig)
 		auth = firebase.auth()
+		self.password = self.lineEdit_2.text()
+		self.email = self.lineEdit.text()
 		email = self.lineEdit.text()
-		password = self.lineEdit_2.text()
+		self.password = self.lineEdit_2.text()
 		with open("info.txt","w") as f:
-			email = self.lineEdit.text()
-			password = self.lineEdit_2.text()
+
 			f.write(email)
-		if(len(password)<6):
+		if(len(self.password)<6):
 			self.status.setText("WeakPassword")
 		else:
 
 			try:
-				user = auth.sign_in_with_email_and_password(email,password)
-				self.signal_dash.emit()
+				user = auth.sign_in_with_email_and_password(self.email,self.password)
+				self.signal_dash.emit(self.password,self.email)
 			except:
 				self.status.setText("Login failed")
-	def stopan(self):
-		self.mv.stop()
+
 	def signup_page(self):
-		self.anime.show()
-		self.mv.start()
+		self.password = self.lineEdit_2.text()
+		self.email = self.lineEdit.text()
+		#self.anime.show()
+		#self.mv.start()
 		self.label.setText("Sign up")
-		self.label_2.setText("Already have an account")
+
+		self.label_2.setText(" ")
 		self.pushButton_2.hide()
-		self.pushButton_4.show()
+		
 		self.pushButton.hide()
 		self.pushButton_3.show()
 		self.widget_3.setStyleSheet("background-color:rgb(144, 0, 72);")	
-		self.mv.stop()
-		self.anime.hide()
+		#self.mv.stop()
+		#self.anime.hide()
 	def cloudin(self):
+		self.password = self.lineEdit_2.text()
+		self.email = self.lineEdit.text()
 		with open("info.txt","w") as f:
-			email = self.lineEdit.text()
-			password = self.lineEdit_2.text()
 			f.write(email)
 		if(len(password)<6):
 			self.status.setText("WeakPassword")
 		else:
 			try:
-				self.anime.show()
-				self.mv.start()
+				#self.anime.show()
+				#self.mv.start()
 				firebase = pyrebase.initialize_app(self.firebaseConfig)
 				auth = firebase.auth()
 				user = auth.create_user_with_email_and_password(email,password)
-				timer= QTimer(self)
-				timer.singleShot(5000,self.stopan)
-				self.signal_dash.emit()
+				#timer= QTimer(self)
+				#timer.singleShot(5000,self.stopan)
+				self.signal_dash.emit(self.password)
 				#self.anime.hide()
 			except Exception as e:
 				print(e)
-				self.mv.stop()
-				self.anime.hide()
+				#self.mv.stop()
+				#self.anime.hide()
 				self.status.setText("User Exists")
 
 
 
 class dash_window(main_window):
-	def __init__(self):
+	def __init__(self,passw,emil):
 		super(dash_window,self).__init__()
 		uic.loadUi("dash.ui",self)
 		self.subm.hide()
 		self.rest.hide()
 		self.resb.hide()
+		self.label_6.hide()
+		self.email=emil
+		self.password=passw
 		self.rest_2.hide()
 		self.label_4.hide()
 		self.f1.hide()
@@ -126,26 +159,33 @@ class dash_window(main_window):
 		today=str(today)
 		self.ls= today.split('-')
 		self.bgl.setStyleSheet(" background-image: url(bgdash.jpg);")
+		#self.pushButton_5.setStyleSheet(" background-image: url(infoicon.jpg);")
 		self.pushButton.clicked.connect(self.editor)
 		self.img.setStyleSheet(" background-image: url(userp.png);border-width:2px;border-radius:40px;")
 		with open("info.txt","r") as f:
 			self.usern.setText("  "+str(str(f.read()).split('@')[0]))
 		self.show()
 	def retrieve(self):
+		
+		email= self.email
+		self.mv= QMovie('sad1.gif')
+		self.mv1= QMovie('ecstatic.gif')
+		email_ls = email.split('@')
 		firebase = pyrebase.initialize_app(self.firebaseConfig)
 		auth = firebase.auth()
-		user1 = auth.sign_in_with_email_and_password("test2@gmail.com","123456")
+		user1 = auth.sign_in_with_email_and_password(self.email,self.password)
 		stri= str(user1['localId'])
-		firebase = fb.FirebaseApplication("https://memoir-journal-app.firebaseio.com/"+stri+'/'+self.ls[0]+'-'+self.ls[1],None)
+		firebase = fb.FirebaseApplication("https://memoir-journal-app.firebaseio.com/"+email_ls[0]+self.password+'/'+self.ls[0]+'-'+self.ls[1],None)
 
 		curr_date = str(self.cl.selectedDate().toString("yyyy/MM/dd"))
 		
-		result = firebase.get("https://memoir-journal-app.firebaseio.com/"+stri+'/'+self.ls[0]+'-'+self.ls[1]+":",'')
+		result = firebase.get("https://memoir-journal-app.firebaseio.com/"+email_ls[0]+self.password+'/'+self.ls[0]+'-'+self.ls[1]+":",'')
 		
 		self.f1.hide()
 		#self.label5.hide()
 		self.comboBox.hide()
 		self.msgb.hide()
+		self.textBrowser.hide()
 		self.subm_2.hide()
 		self.subm.hide()
 		self.rest_2.show()
@@ -158,6 +198,11 @@ class dash_window(main_window):
 				#print(str(y[key]))
 				
 					if(str(y[key])==curr_date):
+						
+						self.label_6.show()
+						self.label_6.setMovie(self.mv)
+						self.mv.start()
+
 						self.rest_2.setText(str(y['date']))
 						self.rest.setText(str(y['title']))
 						self.resb.setPlainText(str(y['message']))
@@ -181,18 +226,21 @@ class dash_window(main_window):
 	def tocloud(self):
 		firebase = pyrebase.initialize_app(self.firebaseConfig)
 		auth = firebase.auth()
-		user1 = auth.sign_in_with_email_and_password("test2@gmail.com","123456")
+		
+
+		user1 = auth.sign_in_with_email_and_password(str(self.email),str(self.password))
 		data = {
 		"date":self.ls[0]+"/"+self.ls[1]+"/"+self.ls[2],
 		"title":str(self.f1.text()),
-		"message":str(self.msgb.toPlainText())
+		"message":str(self.msgb.toPlainText()),
+		"theme":str(self.comboBox.currentText())
 		}
-		stri= str(user1['localId'])
-		print(user1)
-		firebase = fb.FirebaseApplication("https://memoir-journal-app.firebaseio.com/"+stri+'/'+self.ls[0]+'-'+self.ls[1],None)
-		result = firebase.post("https://memoir-journal-app.firebaseio.com/"+stri+'/'+self.ls[0]+'-'+self.ls[1]+":",data)
+		email=self.email 
+		
+		email_ls = email.split('@')
+		firebase = fb.FirebaseApplication("https://memoir-journal-app.firebaseio.com/"+email_ls[0]+self.password+'/'+self.ls[0]+'-'+self.ls[1],None)
+		result = firebase.post("https://memoir-journal-app.firebaseio.com/"+email_ls[0]+self.password+'/'+self.ls[0]+'-'+self.ls[1]+":",data)
 		print("success")
-
 
 
 
@@ -205,8 +253,8 @@ class controller():
 		self.sin1 = main_window()
 		self.sin1.show()
 		self.sin1.signal_dash.connect(self.to_dash)
-	def to_dash(self):
-		self.dash1 = dash_window()
+	def to_dash(self,passw,emil):
+		self.dash1 = dash_window(passw,emil)
 		self.dash1.show()
 
 app = QtWidgets.QApplication(sys.argv)
