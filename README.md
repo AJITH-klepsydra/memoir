@@ -38,7 +38,7 @@ On running
 > Explore
 
 ---
-###Memoir 
+### Memoir 
 
 #### Python,firebase
 
@@ -58,11 +58,6 @@ On running
 |Upload data to server | store.py|
 |Eye Blinking and Emotion Running in Threads|thread.py|
 --->
-
-## Screenshots
-
-
-<img src="https://github.com/AJITH-klepsydra/pyweek/blob/master/static/assets/pk1.png?raw=true" width = 1000px heigth = 1400px>
 
 ---
 
